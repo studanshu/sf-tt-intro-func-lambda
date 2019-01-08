@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 
 @FunctionalInterface
 interface StudentCriterion {
@@ -49,6 +50,18 @@ class EnthusiasticCriterion implements StudentCriterion {
     public boolean test(Student s) {
         return s.getCourses().size() > 2;
     }
+}
+
+class SmartCriterionUsingPredicate implements Predicate<Student> {
+
+    private double threshold;
+
+    public SmartCriterionUsingPredicate(double threshold) {
+        this.threshold = threshold;
+    }
+
+    @Override
+    public boolean test(Student student) { return student.getGpa() > threshold; }
 }
 
 public class School {

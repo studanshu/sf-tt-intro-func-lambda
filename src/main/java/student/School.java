@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+@FunctionalInterface
 interface StudentCriterion {
 //    boolean broken();
     boolean test(Student s);

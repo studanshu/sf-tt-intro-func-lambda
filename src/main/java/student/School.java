@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-@FunctionalInterface
 interface StudentCriterion {
 //    boolean broken();
     boolean test(Student s);
@@ -15,6 +14,14 @@ interface StudentCriterion {
 
     default StudentCriterion negate() {
         return s -> !this.test(s);
+    }
+
+    default StudentCriterion and(StudentCriterion sc) {
+        return s -> this.test(s) && sc.test(s);
+    }
+
+    default StudentCriterion or(StudentCriterion sc) {
+        return s -> this.test(s) || sc.test(s);
     }
 }
 
@@ -96,7 +103,9 @@ public class School {
         List<Student> roster = Arrays.asList(
                 Student.ofNameGpaCourses("Fred", 2.2, "Math", "Physics"),
                 Student.ofNameGpaCourses("Jim", 3.2, "Art"),
-                Student.ofNameGpaCourses("Sheila", 3.7, "Math", "Physics", "Quantum Mechanics")
+                Student.ofNameGpaCourses("Sheila", 3.7, "Math", "Physics", "Quantum Mechanics"),
+                Student.ofNameGpaCourses("Leela", 2.6, "Chemistry", "Physics", "AI"),
+                Student.ofNameGpaCourses("Manju", 3.4, "Math", "History", "Psychology")
         );
         showAll(roster);
 
@@ -147,6 +156,9 @@ public class School {
 
 //        showAll(getByCriterion(roster, StudentCriterion.negate(sc)));
         showAll(getByCriterion(roster, sc.negate()));
+        showAll(getByCriterion(roster, ((StudentCriterion)(s -> s.getGpa() > 3.3)).and(s -> s.getCourses().size() > 2)));
+        showAll(getByCriterion(roster, ((StudentCriterion)(s -> s.getGpa() > 3.6)).or(s -> s.getCourses().size() > 3)));
+
 
     }
 }

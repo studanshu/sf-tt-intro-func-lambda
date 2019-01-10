@@ -1,5 +1,6 @@
 package student;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -7,22 +8,22 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @FunctionalInterface
-interface StudentCriterion {
+interface StudentCriterion<T> {
 //    boolean broken();
-    boolean test(Student s);
-    static StudentCriterion negate(StudentCriterion crit) {
+    boolean test(T s);
+    default StudentCriterion<T> negate(StudentCriterion crit) {
         return s -> !crit.test(s);
     }
 
-    default StudentCriterion negate() {
+    default StudentCriterion<T> negate() {
         return s -> !this.test(s);
     }
 
-    default StudentCriterion and(StudentCriterion sc) {
+    default StudentCriterion<T> and(StudentCriterion<? super T> sc) {
         return s -> this.test(s) && sc.test(s);
     }
 
-    default StudentCriterion or(StudentCriterion sc) {
+    default StudentCriterion<T> or(StudentCriterion<? super T> sc) {
         return s -> this.test(s) || sc.test(s);
     }
 }
@@ -31,7 +32,7 @@ interface Odd {
     boolean test2(Student s);
 }
 
-class SmartCriterion implements StudentCriterion {
+class SmartCriterion implements StudentCriterion<Student> {
     private double threshold;
 
     public SmartCriterion(double threshold) {
@@ -44,7 +45,7 @@ class SmartCriterion implements StudentCriterion {
     }
 }
 
-class EnthusiasticCriterion implements StudentCriterion {
+class EnthusiasticCriterion implements StudentCriterion<Student> {
 
     @Override
     public boolean test(Student s) {
@@ -94,7 +95,7 @@ public class School {
 //        return out;
 //    }
 
-    public static List<Student> getByCriterion(List<Student> ls, StudentCriterion crit) {
+    public static List<? extends Student> getByCriterion(List<? extends Student> ls, StudentCriterion<? super Student> crit) {
         List<Student> out = new ArrayList<>();
 
         for (Student s : ls) {
@@ -106,7 +107,7 @@ public class School {
         return out;
     }
 
-    public static void showAll(List<Student> ls) {
+    public static void showAll(List<? extends Student> ls) {
         for (Student s : ls) {
             System.out.println("> " + s);
         }
@@ -160,19 +161,20 @@ public class School {
         // lambda format #3 "expression lambda" (previously "block lambda")
         showAll(getByCriterion(roster, s -> s.getCourses().size() < 2 ));
 
-        StudentCriterion sc = s -> s.getCourses().size() < 2;
+        StudentCriterion<Student> sc = s -> s.getCourses().size() < 2;
 
         boolean notEnthusiastic =
-                ((StudentCriterion)(s -> s.getCourses().size() < 2))
+                ((StudentCriterion<Student>)(s -> s.getCourses().size() < 2))
                         .test(Student.ofNameGpaCourses("Freddy", 2.2));
 
         showAll(getByCriterion(roster, Student.getSmarterThan(2.0)));
 
 //        showAll(getByCriterion(roster, StudentCriterion.negate(sc)));
         showAll(getByCriterion(roster, sc.negate()));
-        showAll(getByCriterion(roster, ((StudentCriterion)(s -> s.getGpa() > 3.3)).and(s -> s.getCourses().size() > 2)));
-        showAll(getByCriterion(roster, ((StudentCriterion)(s -> s.getGpa() > 3.6)).or(s -> s.getCourses().size() > 3)));
+        showAll(getByCriterion(roster, ((StudentCriterion<Student>)(s -> s.getGpa() > 3.3)).and(s -> s.getCourses().size() > 2)));
+        showAll(getByCriterion(roster, ((StudentCriterion<Student>)(s -> s.getGpa() > 3.6)).or(s -> s.getCourses().size() > 3)));
 
 
     }
+
 }

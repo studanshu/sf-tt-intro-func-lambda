@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @FunctionalInterface
 interface StudentCriterion<T> {
@@ -167,13 +168,12 @@ public class School {
                 ((StudentCriterion<Student>)(s -> s.getCourses().size() < 2))
                         .test(Student.ofNameGpaCourses("Freddy", 2.2));
 
-        showAll(getByCriterion(roster, Student.getSmarterThan(2.0)));
+//        showAll(getByCriterion(roster, Student.getSmarterThan(roster, 2.0)));
 
 //        showAll(getByCriterion(roster, StudentCriterion.negate(sc)));
         showAll(getByCriterion(roster, sc.negate()));
         showAll(getByCriterion(roster, ((StudentCriterion<Student>)(s -> s.getGpa() > 3.3)).and(s -> s.getCourses().size() > 2)));
         showAll(getByCriterion(roster, ((StudentCriterion<Student>)(s -> s.getGpa() > 3.6)).or(s -> s.getCourses().size() > 3)));
-
 
     }
 

@@ -39,8 +39,8 @@ public class Student {
                 '}';
     }
 
-    public static StudentCriterion getSmarterThan(/*final*/ double threshold) {
+    public static boolean getSmarterThan(Student ss,/*final*/ double threshold) {
 //        threshold += 1;
-        return s -> s.gpa > threshold;
+        return ss.gpa > threshold;
     }
 }
